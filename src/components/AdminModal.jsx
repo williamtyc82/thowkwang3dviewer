@@ -7,8 +7,8 @@ export default function AdminModal({ isOpen, onClose, artifacts, onAdd, onUpdate
     if (!isOpen) return null;
 
     const handleEdit = (artifact) => {
-        setEditingId(artifact.id);
-        setFormData(artifact);
+        setEditingId(artifact.documentId);
+        setFormData({ id: artifact.id, title: artifact.title, desc: artifact.desc });
     };
 
     const handleSave = () => {
@@ -107,7 +107,7 @@ export default function AdminModal({ isOpen, onClose, artifacts, onAdd, onUpdate
                             Existing Entries ({artifacts.length})
                         </h3>
                         {artifacts.map(art => (
-                            <div key={art.id} className="flex items-center justify-between p-3 bg-[#111] rounded-lg border border-white/5">
+                            <div key={art.documentId} className="flex items-center justify-between p-3 bg-[#111] rounded-lg border border-white/5">
                                 <div className="min-w-0 pr-4">
                                     <p className="font-bold text-white text-sm truncate">{art.title}</p>
                                     <p className="text-xs text-gray-500 font-mono mt-0.5 truncate">{art.id}</p>
@@ -121,7 +121,7 @@ export default function AdminModal({ isOpen, onClose, artifacts, onAdd, onUpdate
                                         <span className="material-symbols-outlined text-[18px]">edit</span>
                                     </button>
                                     <button
-                                        onClick={() => onDelete(art.id)}
+                                        onClick={() => onDelete(art.documentId)}
                                         className="p-1.5 text-red-400 hover:bg-red-400/10 rounded"
                                         title="Delete"
                                     >

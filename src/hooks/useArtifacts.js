@@ -1,39 +1,56 @@
 import { useState, useEffect } from "react";
-
-const STARTER_ARTIFACTS = [];
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, orderBy, query } from "firebase/firestore";
+import { db } from "../firebase";
 
 export function useArtifacts() {
     const [artifacts, setArtifacts] = useState([]);
 
-    // Load from local storage on mount
+    // Listen to real-time updates from Firestore
     useEffect(() => {
-        const stored = localStorage.getItem("thowkwang_artifacts");
-        if (stored) {
-            setArtifacts(JSON.parse(stored));
-        } else {
-            setArtifacts(STARTER_ARTIFACTS);
-            localStorage.setItem("thowkwang_artifacts", JSON.stringify(STARTER_ARTIFACTS));
-        }
+        const artifactsQuery = query(
+            collection(db, "artifacts"),
+            orderBy("createdAt", "desc")
+        );
+
+        const unsubscribe = onSnapshot(artifactsQuery, (snapshot) => {
+            const artifactList = snapshot.docs.map(doc => ({
+                documentId: doc.id, // Firestore internal ID
+                ...doc.data()
+            }));
+            setArtifacts(artifactList);
+        });
+
+        return () => unsubscribe();
     }, []);
 
-    // Update artifacts and trigger save
-    const saveArtifacts = (newArtifacts) => {
-        setArtifacts(newArtifacts);
-        localStorage.setItem("thowkwang_artifacts", JSON.stringify(newArtifacts));
+    const addArtifact = async (artifact) => {
+        try {
+            // Artifact contains: id (sketchfab), title, desc
+            await addDoc(collection(db, "artifacts"), {
+                ...artifact,
+                createdAt: new Date().toISOString()
+            });
+        } catch (error) {
+            console.error("Error adding artifact: ", error);
+        }
     };
 
-    const addArtifact = (artifact) => {
-        saveArtifacts([artifact, ...artifacts]);
+    const updateArtifact = async (documentId, updatedFields) => {
+        try {
+            const artifactRef = doc(db, "artifacts", documentId);
+            await updateDoc(artifactRef, updatedFields);
+        } catch (error) {
+            console.error("Error updating artifact: ", error);
+        }
     };
 
-    const updateArtifact = (id, updatedFields) => {
-        saveArtifacts(
-            artifacts.map((a) => (a.id === id ? { ...a, ...updatedFields } : a))
-        );
-    };
-
-    const deleteArtifact = (id) => {
-        saveArtifacts(artifacts.filter((a) => a.id !== id));
+    const deleteArtifact = async (documentId) => {
+        try {
+            const artifactRef = doc(db, "artifacts", documentId);
+            await deleteDoc(artifactRef);
+        } catch (error) {
+            console.error("Error deleting artifact: ", error);
+        }
     };
 
     return { artifacts, addArtifact, updateArtifact, deleteArtifact };
