@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #ecb613;
+  --color-primary-dark: #d4a00f;
+  --color-primary-dim: rgba(236, 182, 19, 0.1);
+  --color-background-light: #f8f8f6;
+  --color-background-dark: #1A1A1A;
+  --color-surface-dark: #252525;
+  --color-surface-light: #ffffff;
+  --color-text-gold: #d4a51e;
+  --font-display: "Noto Serif", serif;
+  --font-body: "Noto Sans", sans-serif;
+  --font-sans: "Noto Sans", sans-serif;
+  
+  /* Scrollbar custom colors */
+  --scrollbar-track: #1A1A1A;
+  --scrollbar-thumb: #333;
+  --scrollbar-thumb-hover: #444;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Custom aesthetics from the prototype */
+@layer utilities {
+  .text-shadow-gold {
+    text-shadow: 0 0 20px rgba(236, 182, 19, 0.3);
+  }
+}
+
+@layer base {
+  /* Custom scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track); 
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb); 
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover); 
+  }
+
+  body {
+    min-height: max(884px, 100dvh);
+  }
+}
